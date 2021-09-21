@@ -1,47 +1,48 @@
 import 'phaser';
+import * as map from './map/map';
+import Player from './entities/Player';
 
-export default class Demo extends Phaser.Scene
-{
-    constructor ()
-    {
-        super('demo');
-    }
+export default class Game extends Phaser.Scene {
+  player: Phaser.Physics.Arcade.Sprite;
+  cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys;
+  constructor() {
+    super('Game');
+  }
 
-    preload ()
-    {
-        this.load.image('logo', 'assets/phaser3-logo.png');
-        this.load.image('libs', 'assets/libs.png');
-        this.load.glsl('bundle', 'assets/plasma-bundle.glsl.js');
-        this.load.glsl('stars', 'assets/starfields.glsl.js');
-    }
+  preload() {
+    map.loadImage(this);
 
-    create ()
-    {
-        this.add.shader('RGB Shift Field', 0, 0, 800, 600).setOrigin(0);
+    this.load.spritesheet('player', 'assets/player.png', {
+      frameWidth: 32,
+      frameHeight: 48,
+    });
+  }
 
-        this.add.shader('Plasma', 0, 412, 800, 172).setOrigin(0);
+  create() {
+    map.create(this);
+    this.cursorKeys = this.input.keyboard.createCursorKeys();
 
-        this.add.image(400, 300, 'libs');
+    this.player = new Player(this, 100, 192);
+  }
 
-        const logo = this.add.image(400, 70, 'logo');
-
-        this.tweens.add({
-            targets: logo,
-            y: 350,
-            duration: 1500,
-            ease: 'Sine.inOut',
-            yoyo: true,
-            repeat: -1
-        })
-    }
+  update(time, delta) {}
 }
 
 const config = {
-    type: Phaser.AUTO,
-    backgroundColor: '#125555',
-    width: 800,
-    height: 600,
-    scene: Demo
+  type: Phaser.AUTO,
+  backgroundColor: '#125555',
+  width: 800,
+  height: 600,
+  scene: Game,
+  physics: {
+    default: 'arcade',
+    arcade: {
+      debug: true,
+    },
+  },
+  render: {
+    pixelArt: true,
+  },
 };
 
 const game = new Phaser.Game(config);
