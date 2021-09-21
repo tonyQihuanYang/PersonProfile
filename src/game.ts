@@ -19,10 +19,13 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
-    map.create(this);
+    const _map = map.create(this);
     this.cursorKeys = this.input.keyboard.createCursorKeys();
 
-    this.player = new Player(this, 100, 192);
+    this.player = new Player(this, 25, 25);
+    this.cameras.main.startFollow(this.player);
+
+    this.physics.add.collider(this.player, _map.getLayer('Tile Layer 1').tilemapLayer);
   }
 
   update(time, delta) {}
