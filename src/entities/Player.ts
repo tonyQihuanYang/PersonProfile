@@ -46,30 +46,29 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       frameRate: 10,
       repeat: -1,
     });
-
-    this.anims.play('left');
   }
 
-  preUpdate(time, delta) {
+  preUpdate(time, delta): void {
     super.preUpdate(time, delta);
 
     if (this.keys) {
-
-    if (Phaser.Input.Keyboard.JustDown(this.keys.left)) {
+      if (Phaser.Input.Keyboard.JustDown(this.keys.left)) {
         console.log('just left');
         this.anims.play('left');
-    } else if (Phaser.Input.Keyboard.JustDown(this.keys.right)) {
+      } else if (Phaser.Input.Keyboard.JustDown(this.keys.right)) {
         console.log('just right');
         this.anims.play('right');
-    } else if (Phaser.Input.Keyboard.JustDown(this.keys.up)) {
+      } else if (Phaser.Input.Keyboard.JustDown(this.keys.up)) {
         console.log('just up');
         this.anims.play('up');
-    } else if (Phaser.Input.Keyboard.JustDown(this.keys.down)) {
+      } else if (Phaser.Input.Keyboard.JustDown(this.keys.down)) {
         this.anims.play('down');
         console.log('just down');
-    }
-
-
+      } else {
+        if (this.anims.isPaused) {
+          this.anims.play('down');
+        }
+      }
 
       if (this.keys.left.isDown) {
         this.setVelocityX(-PlayerConfig.Velocity);
@@ -90,9 +89,12 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.setVelocityX(0);
         // this.setFlipY(false);
       } else {
-        this.setVelocityX(0);
-        this.setVelocityY(0);
-        // this.setAccelerationX(0);
+        if (this.anims.isPlaying) {
+          this.anims.play('down');
+          this.setVelocityX(0);
+          this.setVelocityY(0);
+          this.anims.stop();
+        }
       }
     }
   }

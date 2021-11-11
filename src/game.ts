@@ -84,17 +84,18 @@ export default class Game extends Phaser.Scene {
 
   private displayProfileMessage(): void {
     if (!this.isOverlap) {
-      this.graphics.x = this.cameras.main.worldView.x;
-      this.graphics.y = this.cameras.main.worldView.y;
-      console.log(this.cameras.main.worldView.x + 2 * MSG_BOX.Padding);
-
-      this.text.x =
+        console.log("sleeping");
+        this.graphics.x = this.cameras.main.worldView.x;
+        this.graphics.y = this.cameras.main.worldView.y;
+        console.log(this.cameras.main.worldView.x + 2 * MSG_BOX.Padding);
+        
+        this.text.x =
         this.cameras.main.worldView.x + MSG_BOX.Padding + MSG_BOX.Boarder;
-      this.text.y = this.cameras.main.worldView.y + MSG_BOX.Y + MSG_BOX.Boarder;
-      // console.log('overlapping...');
-      this.graphics.setVisible(true);
-      this.text.setVisible(true);
-      this.isOverlap = true;
+        this.text.y = this.cameras.main.worldView.y + MSG_BOX.Y + MSG_BOX.Boarder;
+        // console.log('overlapping...');
+        this.graphics.setVisible(true);
+        this.text.setVisible(true);
+        this.isOverlap = true;
     }
   }
 
@@ -152,7 +153,7 @@ const config = {
   backgroundColor: '#125555',
   width: GAME_SETTINGS.Width,
   height: GAME_SETTINGS.Height,
-  scene: Game,
+  scene: [Game],
   physics: {
     default: 'arcade',
     arcade: {
