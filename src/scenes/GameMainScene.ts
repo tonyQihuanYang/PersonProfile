@@ -1,39 +1,58 @@
-import 'phaser';
-import { GAME_SETTINGS } from '../game';
+import Phaser from 'phaser';
+import { GAME_SETTING } from '../game';
 import * as map from '../map/map';
 import { Player } from '../entities/Player';
+import { ArcadeButtons } from '../entities/ArcadeButtons';
+import { ProfilesComponent } from '../profiles/profile-component';
 
 enum MSG_BOX {
   Y = 400,
   Padding = 20,
   Boarder = 5,
   Radius = 10,
-  Width = GAME_SETTINGS.Width - 2 * MSG_BOX.Padding,
-  Height = GAME_SETTINGS.Height / 3 - MSG_BOX.Padding,
+  Width = GAME_SETTING.Width - 2 * MSG_BOX.Padding,
+  Height = GAME_SETTING.Height / 3 - MSG_BOX.Padding,
 }
 
-
 export class GameMainScene extends Phaser.Scene {
-  player: Phaser.Physics.Arcade.Sprite;
+  cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys =
+    {} as Phaser.Types.Input.Keyboard.CursorKeys;
+  player: Phaser.Physics.Arcade.Sprite = {} as Phaser.Physics.Arcade.Sprite;
+  arcadeButtons: Phaser.Physics.Arcade.Sprite =
+    {} as Phaser.Physics.Arcade.Sprite;
 
-  cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys;
-
-  graphics: Phaser.GameObjects.Graphics;
-  text: Phaser.GameObjects.Text;
+  graphics: Phaser.GameObjects.Graphics = {} as Phaser.GameObjects.Graphics;
+  text: Phaser.GameObjects.Text = {} as Phaser.GameObjects.Text;
   isOverlap: boolean = false;
-
   circle: any;
+
+  profilesComponent: HTMLElement = {} as HTMLElement;
 
   constructor() {
     super('GameMainScene');
+
+    const contentDOM = document.getElementById('content');
+    if (contentDOM) {
+      this.profilesComponent = document.createElement(ProfilesComponent.selector);
+      contentDOM.appendChild(this.profilesComponent);
+      setTimeout(() => {
+        console.log('dispatched');
+        ProfilesComponent.showTemplate(this.profilesComponent, 'x');
+      }, 2000);
+    }
   }
 
   preload() {
     map.loadImage(this);
+    // this.profilesTemplate = new ProfilesTemplate();
 
     this.load.spritesheet('player', 'assets/player.png', {
       frameWidth: 32,
       frameHeight: 48,
+    });
+    this.load.spritesheet('arcadeButtons', 'assets/arcade_button.png', {
+      frameWidth: 32,
+      frameHeight: 32,
     });
   }
 
@@ -41,7 +60,7 @@ export class GameMainScene extends Phaser.Scene {
     const mapObjects = map.create(this);
     const _map = mapObjects.map;
     this.circle = mapObjects.circle;
-    
+
     this.cursorKeys = this.input.keyboard.createCursorKeys();
     this.player = new Player(this, 'player');
     this.cameras.main.startFollow(this.player);
@@ -56,6 +75,17 @@ export class GameMainScene extends Phaser.Scene {
     this.initMessageBox();
     this.addProfileOverlayHandler();
 
+    // this.arcadeButtons = new ArcadeButtons({
+    //   scene: this,
+    //   textureKey: 'arcadeButtons',
+    //   button: 'Q',
+    //   onButtonJustDown: () => {
+    //     console.log('Pressed Q');
+    //     this.arcadeButtons.anims.stop();
+    //     this.arcadeButtons.destroy();
+    //   },
+    // });
+
     // var boundsA = this.player.getBounds();
     //     var boundsB = _circle.getChildren()[0].body.gameObject;
   }
@@ -68,18 +98,23 @@ export class GameMainScene extends Phaser.Scene {
 
   private displayProfileMessage(): void {
     if (!this.isOverlap) {
+      // this.profilesTemplate.show('FleetProfitCenter');
+
       console.log('sleeping');
-      this.graphics.x = this.cameras.main.worldView.x;
-      this.graphics.y = this.cameras.main.worldView.y;
+      // this.graphics.x = this.cameras.main.worldView.x;
+      // this.graphics.y = this.cameras.main.worldView.y;
       console.log(this.cameras.main.worldView.x + 2 * MSG_BOX.Padding);
 
-      this.text.x =
-        this.cameras.main.worldView.x + MSG_BOX.Padding + MSG_BOX.Boarder;
-      this.text.y = this.cameras.main.worldView.y + MSG_BOX.Y + MSG_BOX.Boarder;
+      // this.text.x =
+      //   this.cameras.main.worldView.x + MSG_BOX.Padding + MSG_BOX.Boarder;
+      // this.text.y = this.cameras.main.worldView.y + MSG_BOX.Y + MSG_BOX.Boarder;
       // console.log('overlapping...');
-      this.graphics.setVisible(true);
-      this.text.setVisible(true);
+      // this.graphics.setVisible(true);
+      // this.text.setVisible(true);
       this.isOverlap = true;
+
+      this.game.scene.pause('GameMainScene');
+      this.game.scene.run('KeysScene');
     }
   }
 
@@ -115,7 +150,7 @@ export class GameMainScene extends Phaser.Scene {
     this.text.setVisible(false);
   }
 
-  update(time, delta) {
+  update() {
     var boundsA = this.player.getBounds();
     var boundsB = this.circle.getChildren()[0].body;
     const overlap = Phaser.Geom.Intersects.RectangleToRectangle(
