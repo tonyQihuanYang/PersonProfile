@@ -31,10 +31,11 @@ export class KeysScene extends Phaser.Scene {
   }
 
   create(): void {
+    this.initWhateverEvent();
+    this.initWakeEvent();
     this.createBtnA();
     this.createBtnB();
     this.createBtnQ();
-    console.log('creating');
     // this.add
     // .text(
     //   0,
@@ -54,6 +55,18 @@ export class KeysScene extends Phaser.Scene {
     this.btnB.clean();
   }
 
+  private initWhateverEvent(): void {
+    this.events.on('create', (...args: any) => {
+      console.log('whatever..event', args);
+    });    
+  }
+
+  private initWakeEvent(): void {
+    this.events.on('wake', (...args: any) => {
+      console.log('wake..event', args);
+    });
+  }
+
   private createBtnA(): void {
     this.btnA = new ArcadeButtons({
       scene: this,
@@ -63,8 +76,8 @@ export class KeysScene extends Phaser.Scene {
       initialPostionX: ButtonPosition.LeftX,
       initialPostionY: ButtonPosition.LeftY,
       onButtonJustDown: () => {
+        this.game.scene.sleep('KeysScene');
         this.game.scene.resume('GameMainScene');
-        this.destoryAllBtns();
       },
     });
   }
@@ -78,8 +91,9 @@ export class KeysScene extends Phaser.Scene {
       initialPostionX: ButtonPosition.MiddleX,
       initialPostionY: ButtonPosition.MiddleY,
       onButtonJustDown: () => {
+        // this.destoryAllBtns();
+        this.game.scene.sleep('KeysScene');
         this.game.scene.resume('GameMainScene');
-        this.destoryAllBtns();
       },
     });
   }
@@ -93,8 +107,8 @@ export class KeysScene extends Phaser.Scene {
       initialPostionX: ButtonPosition.RightX,
       initialPostionY: ButtonPosition.RightY,
       onButtonJustDown: () => {
+        this.game.scene.sleep('KeysScene');
         this.game.scene.resume('GameMainScene');
-        this.destoryAllBtns();
       },
     });
   }

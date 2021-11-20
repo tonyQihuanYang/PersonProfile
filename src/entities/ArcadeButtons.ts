@@ -69,7 +69,7 @@ export class ArcadeButtons extends Phaser.Physics.Arcade.Sprite {
     }
     this.createButtonAnimation();
 
-    // this.createButtonText(text, initialPostionX, initialPostionY);
+    this.createButtonText(text, initialPostionX, initialPostionY);
   }
 
   preUpdate(time: number, delta: number): void {
@@ -108,19 +108,19 @@ export class ArcadeButtons extends Phaser.Physics.Arcade.Sprite {
     this.anims.play(this.button);
   }
 
-  // private createButtonText(
-  //   text?: string,
-  //   initialPostionX: number = ArcadeButtons.ButtonWidth,
-  //   initialPostionY: number = ArcadeButtons.ButtonHeight
-  // ): void {
-  //   // console.log(this.scene);
-  //   if (text) {
-  //     this.buttonText = this.scene.add
-  //       .text(initialPostionX + 16, initialPostionY - 16, text, {
-  //         color: '#000000',
-  //         align: 'center',
-  //       })
-  //       .setFontSize(32);
-  //   }
-  // }
+  private createButtonText(
+    text?: string,
+    initialPostionX: number = ArcadeButtons.ButtonWidth,
+    initialPostionY: number = ArcadeButtons.ButtonHeight
+  ): void {
+    // console.log(this.scene);
+    if (text) {
+      this.buttonText = this.scene.add
+        .text(initialPostionX + 16, initialPostionY - 16, text, {
+          color: '#000000',
+          align: 'center',
+        })
+        .setFontSize(32);
+    }
+  }
 }
