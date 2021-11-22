@@ -38,7 +38,7 @@ export class ArcadeButtons extends Phaser.Physics.Arcade.Sprite {
   private cursorKeys: Record<string, Phaser.Input.Keyboard.Key>;
   private button: string;
   private textureId: string;
-  private buttonText?: Phaser.GameObjects.Text;
+  private buttonTextObject?: Phaser.GameObjects.Text;
   constructor({
     scene,
     textureKey,
@@ -68,14 +68,14 @@ export class ArcadeButtons extends Phaser.Physics.Arcade.Sprite {
       this.onButtonJustDown = onButtonJustDown;
     }
     this.createButtonAnimation();
-
-    this.createButtonText(text, initialPostionX, initialPostionY);
+    this.createButtonTextObject(text, initialPostionX, initialPostionY);
   }
 
   preUpdate(time: number, delta: number): void {
     super.preUpdate(time, delta);
 
     if (
+      this.visible &&
       this.cursorKeys &&
       Phaser.Input.Keyboard.JustDown(this.cursorKeys[this.button]) &&
       this.onButtonJustDown
@@ -86,10 +86,18 @@ export class ArcadeButtons extends Phaser.Physics.Arcade.Sprite {
 
   clean(): void {
     this.anims.stop();
-    if (this.buttonText) {
-      this.buttonText.destroy();
-    }
+    this.buttonTextObject?.destroy();
     this.destroy();
+  }
+
+  show(): void {
+    this.setVisible(true);
+    this.buttonTextObject?.setVisible(true);
+  }
+
+  hide(): void {
+    this.setVisible(false);
+    this.buttonTextObject?.setVisible(false);
   }
 
   private createButtonAnimation(): void {
@@ -108,14 +116,13 @@ export class ArcadeButtons extends Phaser.Physics.Arcade.Sprite {
     this.anims.play(this.button);
   }
 
-  private createButtonText(
+  private createButtonTextObject(
     text?: string,
     initialPostionX: number = ArcadeButtons.ButtonWidth,
     initialPostionY: number = ArcadeButtons.ButtonHeight
   ): void {
-    // console.log(this.scene);
     if (text) {
-      this.buttonText = this.scene.add
+      this.buttonTextObject = this.scene.add
         .text(initialPostionX + 16, initialPostionY - 16, text, {
           color: '#000000',
           align: 'center',

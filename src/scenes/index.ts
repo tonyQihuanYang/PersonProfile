@@ -1,2 +1,2 @@
 export * from './GameMainScene';
-export * from './KeysScene';
+export * from './MessageScene';

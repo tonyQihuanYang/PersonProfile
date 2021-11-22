@@ -108,21 +108,10 @@ export class GameMainScene extends Phaser.Scene {
 
     if (!overlap) {
       // this.profilesTemplate.show('FleetProfitCenter');
-
       console.log('sleeping');
-      // this.graphics.x = this.cameras.main.worldView.x;
-      // this.graphics.y = this.cameras.main.worldView.y;
-      // console.log(this.cameras.main.worldView.x + 2 * MSG_BOX.Padding);
-
-      // this.text.x =
-      //   this.cameras.main.worldView.x + MSG_BOX.Padding + MSG_BOX.Boarder;
-      // this.text.y = this.cameras.main.worldView.y + MSG_BOX.Y + MSG_BOX.Boarder;
-      // console.log('overlapping...');
-      // this.graphics.setVisible(true);
-      // this.text.setVisible(true);
       this.isOverlap = true;
 
-      this.game.scene.run('KeysScene', { text: 'wtf'});
+      this.game.scene.run('MessageScene', { message: ['test 123...', '2', '3']});
       this.game.scene.pause('GameMainScene');
     }
   }

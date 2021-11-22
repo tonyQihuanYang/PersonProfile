@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import './profiles';
-import { GameMainScene, KeysScene } from './scenes/index';
+import { GameMainScene, MessageScene } from './scenes/index';
 
 export enum GAME_SETTING {
   Width = 800,
@@ -15,7 +15,7 @@ export enum GAME_SETTING {
 const game = new Phaser.Game({
   type: Phaser.AUTO,
   backgroundColor: '#125555',
-  scene: [GameMainScene, KeysScene],
+  scene: [GameMainScene, MessageScene],
   physics: {
     default: 'arcade',
     arcade: {
