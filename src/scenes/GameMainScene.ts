@@ -4,7 +4,10 @@ import { GAME_SETTING } from '../game';
 import { TilemapLoader } from '../map/TilemapLoader';
 import { Player } from '../entities/Player';
 import { ArcadeButtons } from '../entities/ArcadeButtons';
-import { ProfilesComponent, TemplateNames } from '../profiles/profile-component';
+import {
+  ProfilesComponent,
+  TemplateNames,
+} from '../profiles/profile-component';
 import { InfoSignLoader } from '../map/InfoSignLoader';
 
 enum MSG_BOX {
@@ -29,8 +32,8 @@ export class GameMainScene extends Phaser.Scene {
 
   roadSigns: {
     UofM?: any;
+    FPC?: any;
   } = {};
-
 
   profilesComponent: HTMLElement = {} as HTMLElement;
 
@@ -65,7 +68,18 @@ export class GameMainScene extends Phaser.Scene {
 
   create() {
     const tilemap = TilemapLoader.create(this);
-    this.roadSigns.UofM = InfoSignLoader.create(this, tilemap);
+    this.roadSigns.UofM = InfoSignLoader.create({
+      scene: this,
+      tileMap: tilemap,
+      circleObject: 'InformationCircle',
+      crcleObjectGid: 3,
+    });
+    this.roadSigns.FPC = InfoSignLoader.create({
+      scene: this,
+      tileMap: tilemap,
+      circleObject: 'FleetProfitCenterInfo',
+      crcleObjectGid: 3,
+    });
 
     this.cursorKeys = this.input.keyboard.createCursorKeys();
     this.player = new Player(this, 'player');
@@ -78,41 +92,28 @@ export class GameMainScene extends Phaser.Scene {
     ]);
 
     // Do callback if player hit the circle
-    this.initMessageBox();
-    this.addProfileOverlayHandler();
-
-    // this.arcadeButtons = new ArcadeButtons({
-    //   scene: this,
-    //   textureKey: 'arcadeButtons',
-    //   button: 'Q',
-    //   onButtonJustDown: () => {
-    //     console.log('Pressed Q');
-    //     this.arcadeButtons.anims.stop();
-    //     this.arcadeButtons.destroy();
-    //   },
-    // });
-
-    // var boundsA = this.player.getBounds();
-    //     var boundsB = _circle.getChildren()[0].body.gameObject;
+    // this.initMessageBox();
+    this.addOverlappingRoadSignHandlers();
   }
 
-  private addProfileOverlayHandler(): void {
+  private addOverlappingRoadSignHandlers(): void {
     this.physics.add.overlap(this.player, this.roadSigns.UofM, () =>
-      this.displayProfileMessage()
+      this.overlappingRoadSignHandler(this.roadSigns.UofM, TemplateNames.University)
+    );
+    this.physics.add.overlap(this.player, this.roadSigns.FPC, () =>
+      this.overlappingRoadSignHandler(this.roadSigns.FPC, TemplateNames.FleetProfitCenter),
     );
   }
 
-  private displayProfileMessage(): void {
+  private overlappingRoadSignHandler(roadSign: any, template: TemplateNames): void {
     var boundsA = this.player.getBounds();
-    var boundsB = this.roadSigns.UofM.getChildren()[0].body;
+    var boundsB = roadSign.getChildren()[0].body;
     const overlap = Phaser.Geom.Intersects.RectangleToRectangle(
       boundsA,
       boundsB
     );
 
     if (!overlap) {
-      // this.profilesTemplate.show('FleetProfitCenter');
-      console.log('sleeping');
       this.isOverlap = true;
 
       this.game.scene.run('MessageScene', {
@@ -121,9 +122,10 @@ export class GameMainScene extends Phaser.Scene {
           {
             message: 'Press Q to quit',
             callback: () => {
-              ProfilesComponent.showTemplate(this.profilesComponent, TemplateNames.University);
-              console.log('123');
-              // this.profilesTemplate.show('FleetProfitCenter');
+              ProfilesComponent.showTemplate(
+                this.profilesComponent,
+                template
+              );
             },
           },
         ],
@@ -132,59 +134,13 @@ export class GameMainScene extends Phaser.Scene {
     }
   }
 
-  initMessageBox(): void {
-    this.graphics = this.add.graphics();
-
-    this.graphics.fillStyle(0x786c84, 1);
-    // Grey boarder
-    this.graphics.fillRoundedRect(
-      MSG_BOX.Padding - MSG_BOX.Boarder,
-      MSG_BOX.Y - MSG_BOX.Boarder,
-      MSG_BOX.Width + 2 * MSG_BOX.Boarder,
-      MSG_BOX.Height + 2 * MSG_BOX.Boarder,
-      MSG_BOX.Radius
-    );
-    this.graphics.fillStyle(0xfff9fd, 1);
-    this.graphics.fillRoundedRect(
-      MSG_BOX.Padding,
-      MSG_BOX.Y,
-      MSG_BOX.Width,
-      MSG_BOX.Height,
-      MSG_BOX.Radius
-    );
-    this.text = this.add
-      .text(0, MSG_BOX.Y, 'Fleet Profit Center\nDIU mie', {
-        color: '#000000',
-        align: 'center',
-        wordWrap: { width: MSG_BOX.Width },
-      })
-      .setFontSize(25);
-
-    this.graphics.setVisible(false);
-    this.text.setVisible(false);
-  }
-
   update() {
-    var boundsA = this.player.getBounds();
-    var boundsB = this.roadSigns.UofM.getChildren()[0].body;
-    const overlap = Phaser.Geom.Intersects.RectangleToRectangle(
-      boundsA,
-      boundsB
-    );
-
-    console.log(`on update => detected ${overlap} stored => ${this.isOverlap}`);
-
-    // if (
-    //   // this.isOverlap !== overlap &&
-    //   // this.isOverlap === true &&
-    //   !overlap
-    // ) {
-    //   console.log('get into here ...');
-    //   this.graphics.setVisible(false);
-    //   this.text.setVisible(false);
-    //   this.isOverlap = false;
-    // }
-    // console.log(overlap);
-    // console.log(this.isOverlap);
+    // var boundsA = this.player.getBounds();
+    // var boundsB = this.roadSigns.UofM.getChildren()[0].body;
+    // const overlap = Phaser.Geom.Intersects.RectangleToRectangle(
+    //   boundsA,
+    //   boundsB
+    // );
+    // console.log(`on update => detected ${overlap} stored => ${this.isOverlap}`);
   }
 }

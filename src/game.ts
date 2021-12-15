@@ -6,11 +6,6 @@ export enum GAME_SETTING {
   Width = 800,
   Height = 600,
 }
-// export const GAME_SETTING {
-//   Width: 800,
-//   Height: 600,
-// }
-
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,

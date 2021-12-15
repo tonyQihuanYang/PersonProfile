@@ -1,20 +1,24 @@
 export class InfoSignLoader {
-  static create(
-    scene: Phaser.Scene,
-    tileMap: Phaser.Tilemaps.Tilemap
-  ): Phaser.Physics.Arcade.Group {
+  static create({
+    scene,
+    tileMap,
+    circleObject,
+    crcleObjectGid
+  }: {
+    scene: Phaser.Scene;
+    tileMap: Phaser.Tilemaps.Tilemap;
+    circleObject: string,
+    crcleObjectGid: number
+  }): Phaser.Physics.Arcade.Group {
     const infoCircle = scene.physics.add.group({
       immovable: true,
       allowGravity: false,
     });
 
-    const InformationCircleObject = 'InformationCircle';
-    const InformationCircleObjectGid = 3;
-
     tileMap
-      .getObjectLayer(InformationCircleObject)
+      .getObjectLayer(circleObject)
       .objects.forEach((element) => {
-        if (element.gid === InformationCircleObjectGid) {
+        if (element.gid === crcleObjectGid) {
           const circle = infoCircle.create(
             element.x,
             element.y,
