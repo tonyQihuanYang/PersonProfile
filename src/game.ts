@@ -14,7 +14,7 @@ export enum GAME_SETTING {
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,
-  backgroundColor: '#125555',
+  backgroundColor: '#83924c',
   scene: [GameMainScene, MessageScene],
   physics: {
     default: 'arcade',

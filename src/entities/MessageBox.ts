@@ -22,6 +22,12 @@ interface RequiredTextBoxOptions
   boarder: Required<Boarder>;
 }
 
+export type TextBoxHandler = {
+  message: string;
+  callback: () => void;
+};
+export type TextBoxMessage = string | TextBoxHandler;
+
 export class TextBox extends Phaser.GameObjects.Graphics {
   static DefaultMessage = '...';
 
@@ -39,8 +45,8 @@ export class TextBox extends Phaser.GameObjects.Graphics {
     },
   };
 
-  private messageObject: Phaser.GameObjects.Text;
-  private messageStore: { messages: string[]; curIndex: number } = {
+  private textObject: Phaser.GameObjects.Text;
+  private messageStore: { messages: TextBoxMessage[]; curIndex: number } = {
     messages: [],
     curIndex: -1,
   };
@@ -57,28 +63,27 @@ export class TextBox extends Phaser.GameObjects.Graphics {
 
     options?.textBoxOptions &&
       this.updateTextBoxOptions(options.textBoxOptions);
-    this.messageObject = this.initilizeText();
+    this.textObject = this.initilizeTextObject();
     this.initilizeTextBox();
   }
 
-  show(messages: string[] = []): void {
+  show(messages: TextBoxMessage[] = []): void {
     this.storeMessages(messages);
-
-    this.messageObject.text = this.getCurMessage();
-    this.messageObject.setVisible(true);
+    this.handleCurrentMessage();
+    this.textObject.setVisible(true);
     this.setVisible(true);
   }
 
   showNextMessage(): void {
-    this.messageObject.text = this.getCurMessage();
+    this.handleCurrentMessage();
   }
 
   showPreviousMessage(): void {
-    this.messageObject.text = this.getPrevMessage();
+    this.handleCurrentMessage();
   }
 
   hide(): void {
-    this.messageObject.setVisible(false);
+    this.textObject.setVisible(false);
     this.setVisible(false);
   }
 
@@ -88,6 +93,20 @@ export class TextBox extends Phaser.GameObjects.Graphics {
 
   get isMessageInFirstIndex(): boolean {
     return this.messageStore.curIndex === 0;
+  }
+
+  private handleCurrentMessage(): void {
+    const currentMessage = this.getCurMessage();
+    if (typeof currentMessage === 'string') {
+      this.textObject.text = currentMessage;
+      return;
+    }
+
+    if (typeof currentMessage === 'object') {
+      this.textObject.text = currentMessage.message;
+      currentMessage.callback && currentMessage.callback();
+      return;
+    }
   }
 
   private updateTextBoxOptions(textBoxOptions: TextBoxOptions): void {
@@ -125,7 +144,7 @@ export class TextBox extends Phaser.GameObjects.Graphics {
     this.fillRoundedRect(locatedX, locatedY, width, height, radius);
   }
 
-  private initilizeText(): Phaser.GameObjects.Text {
+  private initilizeTextObject(): Phaser.GameObjects.Text {
     const locatedX =
         this.textBoxOptions.x +
         this.textBoxOptions.boarder.width +
@@ -150,12 +169,12 @@ export class TextBox extends Phaser.GameObjects.Graphics {
       .setFontSize(25);
   }
 
-  private storeMessages(messages: string[]): void {
+  private storeMessages(messages: TextBoxMessage[]): void {
     this.messageStore.messages = messages;
     this.messageStore.curIndex = -1;
   }
 
-  private getCurMessage(): string {
+  private getCurMessage(): TextBoxMessage {
     if (!this.messageStore.messages.length) {
       return TextBox.DefaultMessage;
     }
@@ -167,7 +186,7 @@ export class TextBox extends Phaser.GameObjects.Graphics {
     return TextBox.DefaultMessage;
   }
 
-  private getPrevMessage(): string {
+  private getPrevMessage(): TextBoxMessage {
     if (this.messageStore.curIndex > 0) {
       --this.messageStore.curIndex;
       return this.messageStore.messages[this.messageStore.curIndex];

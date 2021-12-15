@@ -1,9 +1,11 @@
 import Phaser from 'phaser';
 import { GAME_SETTING } from '../game';
-import * as map from '../map/map';
+// import * as map from '../map/map';
+import { TilemapLoader } from '../map/TilemapLoader';
 import { Player } from '../entities/Player';
 import { ArcadeButtons } from '../entities/ArcadeButtons';
-import { ProfilesComponent } from '../profiles/profile-component';
+import { ProfilesComponent, TemplateNames } from '../profiles/profile-component';
+import { InfoSignLoader } from '../map/InfoSignLoader';
 
 enum MSG_BOX {
   Y = 400,
@@ -24,28 +26,33 @@ export class GameMainScene extends Phaser.Scene {
   graphics: Phaser.GameObjects.Graphics = {} as Phaser.GameObjects.Graphics;
   text: Phaser.GameObjects.Text = {} as Phaser.GameObjects.Text;
   isOverlap: boolean = false;
-  circle: any;
+
+  roadSigns: {
+    UofM?: any;
+  } = {};
+
 
   profilesComponent: HTMLElement = {} as HTMLElement;
 
   constructor() {
     super('GameMainScene');
 
-    // const contentDOM = document.getElementById('content');
-    // if (contentDOM) {
-    //   this.profilesComponent = document.createElement(
-    //     ProfilesComponent.selector
-    //   );
-    //   contentDOM.appendChild(this.profilesComponent);
-    //   setTimeout(() => {
-    //     console.log('dispatched');
-    //     ProfilesComponent.showTemplate(this.profilesComponent, 'x');
-    //   }, 2000);
-    // }
+    const contentDOM = document.getElementById('content');
+    if (contentDOM) {
+      this.profilesComponent = document.createElement(
+        ProfilesComponent.selector
+      );
+      contentDOM.appendChild(this.profilesComponent);
+      // setTimeout(() => {
+      //   console.log('dispatched');
+      //   ProfilesComponent.showTemplate(this.profilesComponent, 'x');
+      // }, 2000);
+    }
   }
 
   preload() {
-    map.loadImage(this);
+    TilemapLoader.preloadImages(this);
+    // map.loadImage(this);
     this.load.spritesheet('player', 'assets/player.png', {
       frameWidth: 32,
       frameHeight: 48,
@@ -57,19 +64,18 @@ export class GameMainScene extends Phaser.Scene {
   }
 
   create() {
-    const mapObjects = map.create(this);
-    const _map = mapObjects.map;
-    this.circle = mapObjects.circle;
+    const tilemap = TilemapLoader.create(this);
+    this.roadSigns.UofM = InfoSignLoader.create(this, tilemap);
 
     this.cursorKeys = this.input.keyboard.createCursorKeys();
     this.player = new Player(this, 'player');
     this.cameras.main.startFollow(this.player);
 
     // Prevent player across the collision, ex trees;
-    this.physics.add.collider(
-      this.player,
-      _map.getLayer(map.MapLayer.Map).tilemapLayer
-    );
+    this.physics.add.collider(this.player, [
+      tilemap.getLayer(TilemapLoader.MapLayerId).tilemapLayer,
+      tilemap.getLayer(TilemapLoader.BuildingLayerId).tilemapLayer,
+    ]);
 
     // Do callback if player hit the circle
     this.initMessageBox();
@@ -88,30 +94,40 @@ export class GameMainScene extends Phaser.Scene {
 
     // var boundsA = this.player.getBounds();
     //     var boundsB = _circle.getChildren()[0].body.gameObject;
-
   }
 
   private addProfileOverlayHandler(): void {
-    this.physics.add.overlap(this.player, this.circle, () => 
+    this.physics.add.overlap(this.player, this.roadSigns.UofM, () =>
       this.displayProfileMessage()
     );
   }
 
   private displayProfileMessage(): void {
     var boundsA = this.player.getBounds();
-    var boundsB = this.circle.getChildren()[0].body;
+    var boundsB = this.roadSigns.UofM.getChildren()[0].body;
     const overlap = Phaser.Geom.Intersects.RectangleToRectangle(
       boundsA,
       boundsB
     );
-
 
     if (!overlap) {
       // this.profilesTemplate.show('FleetProfitCenter');
       console.log('sleeping');
       this.isOverlap = true;
 
-      this.game.scene.run('MessageScene', { message: ['test 123...', '2', '3']});
+      this.game.scene.run('MessageScene', {
+        message: [
+          'test 123...',
+          {
+            message: 'Press Q to quit',
+            callback: () => {
+              ProfilesComponent.showTemplate(this.profilesComponent, TemplateNames.University);
+              console.log('123');
+              // this.profilesTemplate.show('FleetProfitCenter');
+            },
+          },
+        ],
+      });
       this.game.scene.pause('GameMainScene');
     }
   }
@@ -150,7 +166,7 @@ export class GameMainScene extends Phaser.Scene {
 
   update() {
     var boundsA = this.player.getBounds();
-    var boundsB = this.circle.getChildren()[0].body;
+    var boundsB = this.roadSigns.UofM.getChildren()[0].body;
     const overlap = Phaser.Geom.Intersects.RectangleToRectangle(
       boundsA,
       boundsB

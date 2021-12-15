@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { ArcadeButtons } from '../entities/ArcadeButtons';
-import { TextBox } from '../entities/MessageBox';
+import { TextBox, TextBoxMessage } from '../entities/MessageBox';
 import { GAME_SETTING } from '../game';
 
 enum ButtonPosition {
@@ -17,12 +17,12 @@ enum ButtonPosition {
 }
 
 export interface MessageSceneOptions {
-  message: string[];
+  message: TextBoxMessage[];
 }
 
 export class MessageScene extends Phaser.Scene {
   textBox: TextBox = {} as TextBox;
-  message: string[] = [];
+  message: TextBoxMessage[] = [];
 
   btnNext: ArcadeButtons = {} as ArcadeButtons;
   btnQuit: ArcadeButtons = {} as ArcadeButtons;
