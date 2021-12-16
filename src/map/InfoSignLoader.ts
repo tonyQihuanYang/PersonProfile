@@ -107,7 +107,7 @@ export class InfoSign {
     private isOverLappingPlayer(player: Phaser.Physics.Arcade.Sprite): boolean {
         return Phaser.Geom.Intersects.RectangleToRectangle(
             player.getBounds(),
-            this.sign.getChildren()[0].body.gameObject
+            this.sign.getChildren()[0].body as any
         );
     }
 }
