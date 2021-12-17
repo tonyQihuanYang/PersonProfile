@@ -7,21 +7,23 @@ export class InfoSignUtils {
     static create({
         scene,
         tileMap,
-        circleObject,
-        crcleObjectGid
+        objectLayerName,
+        objectGid,
+        objectName
     }: {
         scene: Phaser.Scene;
         tileMap: Phaser.Tilemaps.Tilemap;
-        circleObject: string;
-        crcleObjectGid: number;
+        objectLayerName: string;
+        objectGid: number;
+        objectName: string;
     }): Phaser.Physics.Arcade.Group {
         const infoSign = scene.physics.add.group({
             immovable: true,
             allowGravity: false
         });
 
-        tileMap.getObjectLayer(circleObject).objects.forEach((element) => {
-            if (element.gid === crcleObjectGid) {
+        tileMap.getObjectLayer(objectLayerName).objects.forEach((element) => {
+            if (element.gid === objectGid && element.name === objectName) {
                 const circle = infoSign.create(
                     element.x,
                     element.y,
@@ -70,28 +72,29 @@ export class InfoSign {
     constructor({
         scene,
         tileMap,
-        circleObject,
-        crcleObjectGid,
+        objectLayerName,
+        objectGid,
+        objectName,
         overlapHandler
     }: {
         scene: Phaser.Scene;
         tileMap: Phaser.Tilemaps.Tilemap;
-        circleObject: string;
-        crcleObjectGid: number;
+        objectLayerName: string;
+        objectGid: number;
+        objectName: string;
         overlapHandler: () => void;
     }) {
         this.sign = InfoSignUtils.create({
             scene,
             tileMap,
-            circleObject,
-            crcleObjectGid
+            objectLayerName,
+            objectGid,
+            objectName
         });
         this.overlapHandler = overlapHandler;
     }
 
-    executeOverlapHandler(
-        player: Phaser.Physics.Arcade.Sprite,
-    ): void {
+    executeOverlapHandler(player: Phaser.Physics.Arcade.Sprite): void {
         if (!this._isOverlapped && this.isOverLappingPlayer(player)) {
             this._isOverlapped = true;
             this.overlapHandler();

@@ -33,6 +33,7 @@ export class GameMainScene extends Phaser.Scene {
     roadSigns: {
         UofM?: any;
         FPC?: any;
+        Varian?: any
     } = {};
 
     profilesComponent: HTMLElement = {} as HTMLElement;
@@ -82,7 +83,7 @@ export class GameMainScene extends Phaser.Scene {
         const sharedConfig = {
             scene: this,
             tileMap: tilemap,
-            crcleObjectGid: 3
+            objectGid: 3
         };
 
         const lastMessage = (template: TemplateNames) => {
@@ -99,7 +100,8 @@ export class GameMainScene extends Phaser.Scene {
 
         this.roadSigns.UofM = new InfoSign({
             ...sharedConfig,
-            circleObject: 'InformationCircle',
+            objectLayerName: 'RoadSigns',
+            objectName: "UofM",
             overlapHandler: () => {
                 this.game.scene.run('MessageScene', {
                     message: [
@@ -113,7 +115,8 @@ export class GameMainScene extends Phaser.Scene {
 
         this.roadSigns.FPC = new InfoSign({
             ...sharedConfig,
-            circleObject: 'FleetProfitCenterInfo',
+            objectLayerName: 'RoadSigns',
+            objectName: "FleetProfitCenter",
             overlapHandler: () => {
                 this.game.scene.run('MessageScene', {
                     message: [
@@ -124,6 +127,22 @@ export class GameMainScene extends Phaser.Scene {
                 this.game.scene.pause('GameMainScene');
             }
         });
+
+        this.roadSigns.Varian = new InfoSign({
+            ...sharedConfig,
+            objectLayerName: 'RoadSigns',
+            objectName: "Varian",
+            overlapHandler: () => {
+                this.game.scene.run('MessageScene', {
+                    message: [
+                        'Varian Medical Systems...',
+                        lastMessage(TemplateNames.Varian)
+                    ]
+                });
+                this.game.scene.pause('GameMainScene');
+            }
+        });
+
         this.initRoundSignsEvents();
     }
 

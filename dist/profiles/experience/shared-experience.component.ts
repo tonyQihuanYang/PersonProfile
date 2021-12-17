@@ -63,6 +63,7 @@ export class SharedExperienceComponent extends ShadowDOM {
         dom.innerHTML += markdownHTML;
       }
     } catch (err) {
+      console.error(err);
       throw err;
     }
   }
