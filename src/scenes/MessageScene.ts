@@ -4,115 +4,94 @@ import { TextBox, TextBoxMessage } from '../entities/MessageBox';
 import { GAME_SETTING } from '../game';
 
 enum ButtonPosition {
-  Offset = 32,
-  OffsetX = 120,
-  BasicX = GAME_SETTING.Width - OffsetX,
-  BasicY = GAME_SETTING.Height - Offset,
-  RightX = BasicX,
-  RightY = BasicY,
-  MiddleX = BasicX - OffsetX,
-  MiddleY = BasicY,
-  LeftX = BasicX - 2 * OffsetX,
-  LeftY = BasicY,
+    Offset = 32,
+    OffsetX = 120,
+    BasicX = GAME_SETTING.Width - OffsetX,
+    BasicY = GAME_SETTING.Height - Offset,
+    RightX = BasicX,
+    RightY = BasicY,
+    MiddleX = BasicX - OffsetX,
+    MiddleY = BasicY,
+    LeftX = BasicX - 2 * OffsetX,
+    LeftY = BasicY
 }
 
 export interface MessageSceneOptions {
-  message: TextBoxMessage[];
+    message: TextBoxMessage[];
 }
 
 export class MessageScene extends Phaser.Scene {
-  textBox: TextBox = {} as TextBox;
-  message: TextBoxMessage[] = [];
+    textBox: TextBox = {} as TextBox;
+    message: TextBoxMessage[] = [];
 
-  btnNext: ArcadeButtons = {} as ArcadeButtons;
-  btnQuit: ArcadeButtons = {} as ArcadeButtons;
-  // btnBack: ArcadeButtons = {} as ArcadeButtons;
-  constructor() {
-    super('MessageScene');
-  }
+    btnNext: ArcadeButtons = {} as ArcadeButtons;
+    btnQuit: ArcadeButtons = {} as ArcadeButtons;
 
-  init(options?: MessageSceneOptions): void {
-    this.message = options?.message || [];
-  }
+    constructor() {
+        super('MessageScene');
+    }
 
-  preload(): void {
-    this.load.spritesheet('arcadeButtons', 'assets/arcade_button.png', {
-      frameWidth: 32,
-      frameHeight: 32,
-    });
-  }
+    init(options?: MessageSceneOptions): void {
+        this.message = options?.message || [];
+    }
 
-  create(): void {
-    this.initWakeEvent();
-    this.initMessageBox();
-    this.createBtnA();
-    // this.createBtnB();
-    this.createBtnQ();
-  }
+    preload(): void {
+        this.load.spritesheet('arcadeButtons', 'assets/arcade_button.png', {
+            frameWidth: 32,
+            frameHeight: 32
+        });
+    }
 
-  private initWakeEvent(): void {
-    this.events.on('wake', (_: any, options?: MessageSceneOptions) => {
-      this.textBox.show(options?.message);
-      this.btnNext.show();
-      this.btnQuit.show();
-      // this.btnBack.hide();
-    });
-  }
+    create(): void {
+        this.initWakeEvent();
+        this.initMessageBox();
+        this.createBtnA();
+        this.createBtnQ();
+    }
 
-  initMessageBox(): void {
-    this.textBox = new TextBox(this);
-    this.textBox.show(this.message);
-  }
+    private initWakeEvent(): void {
+        this.events.on('wake', (_: any, options?: MessageSceneOptions) => {
+            this.textBox.show(options?.message);
+            this.btnNext.show();
+            this.btnQuit.show();
+        });
+    }
 
-  private createBtnA(): void {
-    this.btnNext = new ArcadeButtons({
-      scene: this,
-      textureKey: 'arcadeButtons',
-      button: 'A',
-      text: 'Next',
-      initialPostionX: ButtonPosition.MiddleX,
-      initialPostionY: ButtonPosition.MiddleY,
-      onButtonJustDown: () => {
-        this.textBox.showNextMessage();
-        // this.btnBack.show();
-        if (!this.textBox.hasRemainedMessage) {
-          this.btnNext.hide();
-        }
-      },
-    });
-  }
+    initMessageBox(): void {
+        this.textBox = new TextBox(this);
+        this.textBox.show(this.message);
+    }
 
-  // private createBtnB(): void {
-  //   this.btnBack = new ArcadeButtons({
-  //     scene: this,
-  //     textureKey: 'arcadeButtons',
-  //     button: 'B',
-  //     text: 'Back',
-  //     initialPostionX: ButtonPosition.MiddleX,
-  //     initialPostionY: ButtonPosition.MiddleY,
-  //     onButtonJustDown: () => {
-  //       this.btnNext.show();
-  //       this.textBox.showPreviousMessage();
-  //       if (this.textBox.isMessageInFirstIndex) {
-  //         this.btnBack.hide();
-  //       }
-  //     },
-  //   });
-  // }
+    private createBtnA(): void {
+        this.btnNext = new ArcadeButtons({
+            scene: this,
+            textureKey: 'arcadeButtons',
+            button: 'A',
+            text: 'Next',
+            initialPostionX: ButtonPosition.MiddleX,
+            initialPostionY: ButtonPosition.MiddleY,
+            onButtonJustDown: () => {
+                this.textBox.showNextMessage();
+                if (!this.textBox.hasRemainedMessage) {
+                    this.btnNext.hide();
+                }
+            }
+        });
+    }
 
-  private createBtnQ(): void {
-    this.btnQuit = new ArcadeButtons({
-      scene: this,
-      textureKey: 'arcadeButtons',
-      button: 'Q',
-      text: 'Quit',
-      initialPostionX: ButtonPosition.RightX,
-      initialPostionY: ButtonPosition.RightY,
-      onButtonJustDown: () => {
-        this.textBox.hide();
-        this.game.scene.sleep('MessageScene');
-        this.game.scene.resume('GameMainScene');
-      },
-    });
-  }
+    private createBtnQ(): void {
+        this.btnQuit = new ArcadeButtons({
+            scene: this,
+            textureKey: 'arcadeButtons',
+            button: 'Q',
+            text: 'Quit',
+            initialPostionX: ButtonPosition.RightX,
+            initialPostionY: ButtonPosition.RightY,
+            onButtonJustDown: () => {
+                this.textBox.hide();
+                this.game.scene.sleep('MessageScene');
+                this.game.scene.resume('GameMainScene');
+            }
+        });
+    }
 }

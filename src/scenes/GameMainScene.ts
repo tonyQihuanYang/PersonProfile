@@ -3,21 +3,11 @@ import { GAME_SETTING } from '../game';
 // import * as map from '../map/map';
 import { TilemapLoader } from '../map/TilemapLoader';
 import { Player } from '../entities/Player';
-import { ArcadeButtons } from '../entities/ArcadeButtons';
 import {
     ProfilesComponent,
     TemplateNames
 } from '../profiles/profile-component';
 import { InfoSign } from '../map/InfoSignLoader';
-
-enum MSG_BOX {
-    Y = 400,
-    Padding = 20,
-    Boarder = 5,
-    Radius = 10,
-    Width = GAME_SETTING.Width - 2 * MSG_BOX.Padding,
-    Height = GAME_SETTING.Height / 3 - MSG_BOX.Padding
-}
 
 export class GameMainScene extends Phaser.Scene {
     cursorKeys: Phaser.Types.Input.Keyboard.CursorKeys =
@@ -33,7 +23,7 @@ export class GameMainScene extends Phaser.Scene {
     roadSigns: {
         UofM?: any;
         FPC?: any;
-        Varian?: any
+        Varian?: any;
     } = {};
 
     profilesComponent: HTMLElement = {} as HTMLElement;
@@ -86,13 +76,13 @@ export class GameMainScene extends Phaser.Scene {
             objectGid: 3
         };
 
-        const lastMessage = (template: TemplateNames) => {
+        const lastMessage = (templateName: TemplateNames) => {
             return {
                 message: 'Press Q to quit',
                 callback: () => {
                     ProfilesComponent.showTemplate(
                         this.profilesComponent,
-                        template
+                        templateName
                     );
                 }
             };
@@ -101,7 +91,7 @@ export class GameMainScene extends Phaser.Scene {
         this.roadSigns.UofM = new InfoSign({
             ...sharedConfig,
             objectLayerName: 'RoadSigns',
-            objectName: "UofM",
+            objectName: 'UofM',
             overlapHandler: () => {
                 this.game.scene.run('MessageScene', {
                     message: [
@@ -116,7 +106,7 @@ export class GameMainScene extends Phaser.Scene {
         this.roadSigns.FPC = new InfoSign({
             ...sharedConfig,
             objectLayerName: 'RoadSigns',
-            objectName: "FleetProfitCenter",
+            objectName: 'FleetProfitCenter',
             overlapHandler: () => {
                 this.game.scene.run('MessageScene', {
                     message: [
@@ -131,7 +121,7 @@ export class GameMainScene extends Phaser.Scene {
         this.roadSigns.Varian = new InfoSign({
             ...sharedConfig,
             objectLayerName: 'RoadSigns',
-            objectName: "Varian",
+            objectName: 'Varian',
             overlapHandler: () => {
                 this.game.scene.run('MessageScene', {
                     message: [
